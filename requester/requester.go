@@ -53,6 +53,9 @@ type Work struct {
 
 	RequestBody []byte
 
+    // requests in one file
+    FR *FileReader
+
 	// N is the total number of requests to make.
 	N int
 
@@ -146,7 +149,13 @@ func (b *Work) makeRequest(c *http.Client) {
 	var code int
 	var dnsStart, connStart, resStart, reqStart, delayStart time.Duration
 	var dnsDuration, connDuration, resDuration, reqDuration, delayDuration time.Duration
-	req := cloneRequest(b.Request, b.RequestBody)
+    //var request_body []byte
+    request_body := b.RequestBody
+    if b.FR != nil {
+        line_content, _ := b.FR.ReadLine()
+        request_body = []byte(line_content)
+    }
+	req := cloneRequest(b.Request, request_body)
 	trace := &httptrace.ClientTrace{
 		DNSStart: func(info httptrace.DNSStartInfo) {
 			dnsStart = now()
