@@ -118,6 +118,8 @@ func (b *Work) Init() {
 // all work is done.
 func (b *Work) Run() {
 	b.Init()
+
+    b.FR.Open()
 	b.start = now()
 	b.report = newReport(b.writer(), b.results, b.Output, b.N)
 	// Run the reporter first, it polls the result channel until it is closed.
