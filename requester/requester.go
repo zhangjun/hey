@@ -26,6 +26,7 @@ import (
 	"os"
 	"sync"
 	"time"
+    //"log"
 
 	"golang.org/x/net/http2"
 )
@@ -119,7 +120,9 @@ func (b *Work) Init() {
 func (b *Work) Run() {
 	b.Init()
 
-    b.FR.Open()
+    if b.FR != nil {
+        b.FR.Open()
+    }
 	b.start = now()
 	b.report = newReport(b.writer(), b.results, b.Output, b.N)
 	// Run the reporter first, it polls the result channel until it is closed.
@@ -275,8 +278,13 @@ func cloneRequest(r *http.Request, body []byte) *http.Request {
 	for k, s := range r.Header {
 		r2.Header[k] = append([]string(nil), s...)
 	}
-	if len(body) > 0 {
-		r2.Body = ioutil.NopCloser(bytes.NewReader(body))
+    if len(body) > 0 {
+        if r2.Method == "GET" {
+            r2.URL.RawQuery = string(body)
+            //log.Println(r2.URL.RawQuery)
+        } else if r2.Method == "POST" {
+	    	r2.Body = ioutil.NopCloser(bytes.NewReader(body))
+        }
 	}
 	return r2
 }

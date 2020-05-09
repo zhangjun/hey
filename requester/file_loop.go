@@ -49,6 +49,7 @@ func (fr *FileReader) ReadLine() (string, error) {
         return fr.ReadLine()
     }
 
+    //log.Println(line)
     return line, nil
 }
 
